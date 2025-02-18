@@ -1,51 +1,65 @@
 use rand::Rng;
-use std::io;
+use std::io::{self, Write};
 
+// Cтруктура для хранения цветов
 struct ColorRgb(u32, u32, u32);
 
 fn main() {
-    println!("Hello!");
+    println!("Привет!");
     println!("Это генератор цветов.");
     loop {
-        println!("Выберете формат :\n");
+        println!("Введите 1 если в RGB.");
+        println!("Введите 2 если в HEX.\n");
+        println!("Введите 0 если хотите выйти.\n");
+        print!("Выберете формат: ");
 
-        println!("Введите 1 если в RGB");
-        println!("Введите 2 если в HEX \n");
+        // Сбрасываю буффер
+        io::stdout().flush().unwrap();
 
-        println!("Введите 0 если хотите выйти");
-
+        // Читаю ввод
         let mut format = String::new();
-        io::stdin().read_line(&mut format).expect("Failed");
+        io::stdin().read_line(&mut format).expect("Failed input.");
 
-        let format: i32 = format.trim().parse().expect("Failed");
+        // Парсинг ввода
+        if let Ok(format) = format.trim().parse::<i32>() {
+            match format {
+                // Выходим из цикла
+                0 => break,
+                // Печатаю цвет в RGB формате
+                1 => {
+                    let rgb = rand_rgb();
+                    println!(
+                        "Color in rgb: \x1b[31m{}\x1b[0m \x1b[32m{}\x1b[0m \x1b[34m{}\x1b[0m\n",
+                        rgb.0, rgb.1, rgb.2
+                    );
+                }
 
-        if format == 0 {
-            break;
-        } else if format == 1 {
-            let rand_color = ColorRgb(
-                rand::thread_rng().gen_range(1..=256),
-                rand::thread_rng().gen_range(1..=256),
-                rand::thread_rng().gen_range(1..=256),
-            );
-
-            println!(
-                "Color in rgb :  r {} g {} b {}\n",
-                rand_color.0, rand_color.1, rand_color.2
-            );
+                // Печаю цвет в HEX формате
+                _ => println!("Color in hex: \x1b[95m{}\x1b[0m\n", rand_hex()),
+            }
         } else {
-            let hex = rand_hex();
-
-            println!("Color in hex: {}\n", hex);
-        }
+            println!("\x1b[31mНеверный формат ввода.\x1b[0m\n");
+        };
     }
 }
 
+// Создаю цвет в RGB формате
+fn rand_rgb() -> ColorRgb {
+    ColorRgb(
+        rand::thread_rng().gen_range(1..=256),
+        rand::thread_rng().gen_range(1..=256),
+        rand::thread_rng().gen_range(1..=256),
+    )
+}
+
+// Создаю цвет в HEX формате
 fn rand_hex() -> String {
     let mut hex = String::from("#");
     let hex_mas = [
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
     ];
 
+    // Добавляю пока длинна строки не будут 7
     while hex.len() < 7 {
         let index = rand::thread_rng().gen_range(0..=15);
         hex.push_str(&hex_mas[index]);
