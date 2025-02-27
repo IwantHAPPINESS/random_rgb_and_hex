@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::{rng, Rng};
 use std::io::{self, Write};
 
 // Cтруктура для хранения цветов
@@ -46,9 +46,9 @@ fn main() {
 // Создаю цвет в RGB формате
 fn rand_rgb() -> ColorRgb {
     ColorRgb(
-        rand::thread_rng().gen_range(1..=256),
-        rand::thread_rng().gen_range(1..=256),
-        rand::thread_rng().gen_range(1..=256),
+        rng().random_range(1..=256),
+        rng().random_range(1..=256),
+        rng().random_range(1..=256),
     )
 }
 
@@ -61,8 +61,8 @@ fn rand_hex() -> String {
 
     // Добавляю пока длинна строки не будут 7
     while hex.len() < 7 {
-        let index = rand::thread_rng().gen_range(0..=15);
-        hex.push_str(&hex_mas[index]);
+        let index = rng().random_range(0..=15);
+        hex.push_str(hex_mas[index]);
     }
 
     hex
